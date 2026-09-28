@@ -42,35 +42,40 @@ int main() {
 ''третий способ: ООП''
 
 #include <iostream>
-#include <cmath>
+#include <cmath> // Для sqrt()
 using namespace std;
 
 class Triangle {
-private:
-    double cathetus_a = 0; 
-    double cathetus_b = 0;
+    double a = 0; // Катет а
+    double b = 0; // Катет б
+
 public:
-    void input_sides() { 
-        cout << "Введите два положительных катета a и b: ";
-        cin >> cathetus_a >> cathetus_b;
+    Triangle(double cathetus_a, double cathetus_b) : 
+        a(cathetus_a), b(cathetus_b) {  
         
-        if (cathetus_a <= 0 || cathetus_b <= 0)
+        if (a <= 0 || b <= 0) {
             throw runtime_error("Катеты должны быть положительными!");
+        }
     }
     
-    double get_hypotenuse() const {
-        return sqrt(cathetus_a * cathetus_a + cathetus_b * cathetus_b);  
+    double hypotenuse() const {
+        return sqrt(a * a + b * b);
     }
 };
 
 int main() {
     try {
-        Triangle t;
-        t.input_sides();   
-        cout << "Гипотенуза = " << t.get_hypotenuse() << endl;
+        cout << "Введите два положительных катета a и b через пробел:";
+        double a, b;
+        cin >> a >> b;
+
+        Triangle t{a, b}; 
+
+        cout << "Гипотенуза = " << t.hypotenuse() << endl;
     } catch(const exception& e) {
         cerr << "Ошибка! " << e.what() << endl;
     }
+
     return 0;
 }
 
@@ -138,15 +143,15 @@ int main() {
 using namespace std;
 
 class Number {
-private:
-    int value;   
-public:
-    void input() { 
-        cout << "Введите число: "; 
-        cin >> value; 
-    }
+    int value; 
 
-    int getTensDigit() const {
+public:  
+    void input() { 
+        cout << "Введите число: ";
+        cin >> value;
+    }
+    
+    int getTensDigit() const { 
         return (value / 10) % 10;
     }
 };
@@ -154,7 +159,7 @@ public:
 int main() {
     Number num;
     num.input();                     
-    cout << "Число десятков: " << num.getTensDigit() << endl;
+    cout << "Число десятков: " << num.getTensDigit() << endl; 
     return 0;
 }
 
