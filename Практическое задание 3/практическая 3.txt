@@ -1,0 +1,184 @@
+Задача №1
+
+''первый способ: модульный''
+
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+double hypotenuse(double a, double b) {
+    return sqrt(a * a + b * b);
+}
+
+int main() {
+    double a, b;
+    cout << "Введите катеты a и b: ";
+    cin >> a >> b;
+    
+    cout << "Гипотенуза = " << hypotenuse(a, b) << endl;
+    return 0;
+}
+
+''второй способ: процедурный''
+
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+void solve_hypotenuse() {
+    double a, b;
+    cout << "Введите катеты a и b: ";
+    cin >> a >> b;
+    
+    double c = sqrt(a * a + b * b);
+    cout << "Гипотенуза = " << c << endl;
+}
+
+int main() {
+    solve_hypotenuse();
+    return 0;
+}
+
+''третий способ: ООП''
+
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+class Triangle {
+private:
+    double cathetus_a = 0; 
+    double cathetus_b = 0;
+public:
+    void input_sides() { 
+        cout << "Введите два положительных катета a и b: ";
+        cin >> cathetus_a >> cathetus_b;
+        
+        if (cathetus_a <= 0 || cathetus_b <= 0)
+            throw runtime_error("Катеты должны быть положительными!");
+    }
+    
+    double get_hypotenuse() const {
+        return sqrt(cathetus_a * cathetus_a + cathetus_b * cathetus_b);  
+    }
+};
+
+int main() {
+    try {
+        Triangle t;
+        t.input_sides();   
+        cout << "Гипотенуза = " << t.get_hypotenuse() << endl;
+    } catch(const exception& e) {
+        cerr << "Ошибка! " << e.what() << endl;
+    }
+    return 0;
+}
+
+''четвертый способ: файловый''
+
+#include <fstream>
+using namespace std;
+
+int main() {
+    ifstream fin("input1.txt");
+    ofstream fout("output1.txt");
+
+    int number;
+    fin >> number;
+
+    fout << "Число десятков: " << ((number / 10) % 10) << endl;
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+
+Задача № 3
+
+''первый способ: модульный''
+
+#include <iostream>
+using namespace std;
+
+int get_tens_digit(int number) {
+    return (number / 10) % 10;
+}
+
+int main() {
+    int num;
+    cout << "Введите число: ";
+    cin >> num;
+    
+    cout << "Число десятков: " << get_tens_digit(num) << endl;
+    return 0;
+}
+
+''второй способ: процедурный''
+
+#include <iostream>
+using namespace std;
+
+void find_tens_digit() {
+    int num;
+    cout << "Введите число: ";
+    cin >> num;
+    
+    int tens = (num / 10) % 10;
+    cout << "Число десятков: " << tens << endl;
+}
+
+int main() {
+    find_tens_digit();
+    return 0;
+}
+
+''третий способ: ООП''
+
+#include <iostream>
+using namespace std;
+
+class Number {
+private:
+    int value;   
+public:
+    void input() { 
+        cout << "Введите число: "; 
+        cin >> value; 
+    }
+
+    int getTensDigit() const {
+        return (value / 10) % 10;
+    }
+};
+
+int main() {
+    Number num;
+    num.input();                     
+    cout << "Число десятков: " << num.getTensDigit() << endl;
+    return 0;
+}
+
+
+''четвертый способ: файловый''
+
+#include <fstream>     
+using namespace std;
+
+int main() {
+    ifstream fin("input3.txt");      
+    ofstream fout("output3.txt");    
+
+    int number;
+    fin >> number;                  
+    
+    int result = (number / 10) % 10;
+    
+    fout << "Число десятков: " << result << endl;
+
+    fin.close();                    
+    fout.close();
+    return 0;
+}
+
+
+
