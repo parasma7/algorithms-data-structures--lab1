@@ -1,0 +1,193 @@
+Задача №1
+
+1 способ:
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int N;
+    cin >> N; // Считываем размер стены (N)
+
+    // Проходим по строкам (сверху вниз)
+    for (int i = 0; i < N; ++i) {
+        // Проходим по столбцам (слева направо)
+        for (int j = 0; j < N; ++j) {
+            
+            // Свойство побочной диагонали: сумма индексов строки и столбца равна N - 1
+            if (i + j == N - 1) {
+                cout << 1 << " "; // На диагонали
+            } 
+            // Если сумма меньше N - 1, значит кирпич находится выше диагонали
+            else if (i + j < N - 1) {
+                cout << 0 << " "; // Выше диагонали
+            } 
+            // В остальных случаях кирпич ниже диагонали
+            else {
+                cout << 2 << " "; // Ниже диагонали
+            }
+        }
+        cout << endl; // Переход на новую строку после завершения ряда
+    }
+
+    return 0;
+}
+
+2 способ:
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    int N;
+    cin >> N;
+
+    // Создаем матрицу N x N, изначально заполненную нулями
+    vector<vector<int>> wall(N, vector<int>(N, 0));
+
+    // Заполняем матрицу по правилам
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            if (i + j == N - 1) {
+                wall[i][j] = 1; // Диагональ
+            } else if (i + j > N - 1) {
+                wall[i][j] = 2; // Ниже диагонали
+            }
+            // Верхняя часть (i + j < N - 1) остается нулями
+        }
+    }
+
+    // Выводим готовую матрицу на экран
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            cout << wall[i][j] << " ";
+        }
+        cout << "\n";
+    }
+
+    return 0;
+}
+
+Задача № 2
+
+1 способ:
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n, m, w;
+    cin >> n >> m >> w;
+    vector<vector<bool>> g(n + 2, vector<bool>(m + 2, false)); // поле с рамкой
+
+    while (w--) {
+        int r, c;
+        cin >> r >> c;
+        g[r][c] = true; // рамка позволяет не делать r-- и c--
+    }
+
+    for (int i = 1; i <= n; ++i, cout << '\n')
+        for (int j = 1; j <= m; ++j) {
+            if (g[i][j]) { cout << '*'; continue; }
+            int cnt = 0;
+            for (int di = -1; di <= 1; ++di)
+                for (int dj = -1; dj <= 1; ++dj)
+                    cnt += g[i + di][j + dj];
+            cout << cnt;
+        }
+}
+
+2 способ:
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n, m, w;
+    cin >> n >> m >> w;
+    vector<vector<bool>> g(n, vector<bool>(m, false));
+
+    while (w--) {
+        int r, c;
+        cin >> r >> c;
+        g[--r][--c] = true; // сразу сдвигаем в 0-индексацию
+    }
+
+    for (int i = 0; i < n; ++i, cout << '\n')
+        for (int j = 0; j < m; ++j) {
+            if (g[i][j]) { cout << '*'; continue; }
+            int cnt = 0;
+            for (int di = -1; di <= 1; ++di)
+                for (int dj = -1; dj <= 1; ++dj)
+                    // вся проверка границ умещается в одно условие
+                    if (i+di >= 0 && i+di < n && j+dj >= 0 && j+dj < m)
+                        cnt += g[i + di][j + dj];
+            cout << cnt;
+        }
+}
+
+Задача № 3
+
+1 способ: 
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string s;
+    int n;
+    cin >> s >> n;
+
+    // Выполняем преобразование n-1 раз (т.к. первая строка уже дана)
+    while (--n) {
+        string next = ""; // новая строка
+        int count = 1;    // счетчик повторений текущего символа
+
+        for (int i = 0; i < s.length(); ++i) {
+            // Если следующий символ существует и совпадает с текущим
+            if (i + 1 < s.length() && s[i] == s[i + 1]) {
+                count++; // увеличиваем счетчик
+            } else {
+                // Символ изменился или строка кончилась — записываем группу
+                next += to_string(count) + s[i];
+                count = 1; // сбрасываем счетчик
+            }
+        }
+        s = next; // обновляем строку для следующего шага
+    }
+
+    cout << s; // выводим результат
+    return 0;
+}
+
+2 способ:
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string s;
+    int n;
+    cin >> s >> n;
+
+    while (--n) {
+        string t = "";
+        for (int i = 0, j; i < s.length(); i = j) {
+            // j бежит вперед, пока символы одинаковые
+            for (j = i; j < s.length() && s[i] == s[j]; ++j);
+            // разница j - i равна количеству повторений
+            t += to_string(j - i) + s[i];
+        }
+        s = t;
+    }
+
+    cout << s;
+    return 0;
+}
