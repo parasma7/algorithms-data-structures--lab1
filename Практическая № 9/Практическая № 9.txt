@@ -1,0 +1,195 @@
+Задание № 1
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cctype> // Для функции tolower
+
+using namespace std;
+
+int main() {
+    // Открываем файл для чтения
+    ifstream inputFile("input.txt");
+    
+    // Проверяем, удалось ли открыть файл
+    if (!inputFile.is_open()) {
+        cerr << "Ошибка: не удалось открыть файл input.txt" << endl;
+        return 1;
+    }
+
+    // Открываем файл для записи
+    ofstream outputFile("output.txt");
+
+    // Читаем файл посимвольно
+    char c;
+    while (inputFile.get(c)) {
+        // Приводим символ к нижнему регистру для проверки
+        char lowerC = tolower(c);
+
+        // Проверяем, является ли символ одной из букв: u, s, e, r, a, g, m, n, t
+        // (буквы из фразы "user agreement")
+        if (lowerC == 'u' || lowerC == 's' || lowerC == 'e' || 
+            lowerC == 'r' || lowerC == 'a' || lowerC == 'g' || 
+            lowerC == 'm' || lowerC == 'n' || lowerC == 't') {
+            // Если символ совпал, пропускаем его (ничего не пишем в выходной файл)
+            continue; 
+        }
+
+        // Если символ не совпал, записываем его в выходной файл
+        outputFile << c;
+    }
+
+    // Закрываем файлы
+    inputFile.close();
+    outputFile.close();
+
+    return 0;
+}
+
+2 способ
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cctype>
+
+using namespace std;
+
+int main() {
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+
+    if (!fin.is_open()) {
+        cout << "Файл не найден!" << endl;
+        return 0;
+    }
+
+    // Строка-шаблон: буквы, которые нужно удалить
+    // (все буквы из фразы "user agreement")
+    string forbidden = "useragreement"; 
+
+    char c;
+    // Читаем файл посимвольно
+    while (fin.get(c)) {
+        // Переводим символ в нижний регистр, чтобы 'U' и 'u' считались одинаково
+        char lowerC = tolower(c);
+
+        // Ищем этот символ в нашей строке-шаблоне
+        // Если find вернул npos — значит, символа там нет, можно писать
+        if (forbidden.find(lowerC) == string::npos) {
+            fout << c;
+        }
+        // Иначе (если нашли) — просто ничего не делаем, символ удаляется
+    }
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+Задание № 2
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+int main() {
+    // Открываем файлы с данными
+    ifstream inX("input1.txt");
+    ifstream inY("input2.txt");
+
+    // Проверка на всякий случай, вдруг файлов нет
+    if (!inX.is_open() || !inY.is_open()) {
+        cout << "Не удалось открыть файлы!" << endl;
+        return 1;
+    }
+
+    string X, Y;
+    
+    // Считываем строки. Так как в условии сказано, что пробелов нет, 
+    // обычный оператор >> вполне подойдет
+    inX >> X;
+    inY >> Y;
+
+    // Закрываем файлы, они больше не нужны
+    inX.close();
+    inY.close();
+
+    // В C++ есть удобная функция find() для строк.
+    // Она ищет подстроку Y внутри строки X.
+    // Если найдет - вернет номер символа, где начинается совпадение.
+    // Если не найдет - вернет string::npos (специальное значение "не найдено").
+    
+    if (X.find(Y) != string::npos) {
+        cout << "yes" << endl;
+    } else {
+        cout << "no" << endl;
+    }
+
+    return 0;
+}
+
+Задание № 3
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+// Функция, которая переводит строку с цифрами в двоичное число
+// (в виде строки, чтобы было проще клеить)
+string toBinary(int num) {
+    if (num == 0) return "0"; // если ноль, то и переводить нечего
+    
+    string bin = "";
+    while (num > 0) {
+        bin = char((num % 2) + '0') + bin; // остаток от деления (0 или 1) клеим в начало
+        num /= 2;
+    }
+    return bin;
+}
+
+int main() {
+    // Открываем файлы
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+
+    if (!fin.is_open()) {
+        cout << "Файл не открылся!" << endl;
+        return 0;
+    }
+
+    string s;
+    getline(fin, s); // читаем всю строку целиком, она у нас в одну строчку
+
+    string result = ""; // сюда будем копить ответ
+    int n = s.length();
+
+    // Бежим по строке посимвольно
+    for (int i = 0; i < n; ) {
+        // Если видим цифру — значит, начинается какое-то число
+        if (isdigit(s[i])) {
+            int num = 0;
+            // Пока идут цифры — собираем их в одно число
+            while (i < n && isdigit(s[i])) {
+                num = num * 10 + (s[i] - '0');
+                i++;
+            }
+            // Как только собрали всё число — переводим в двоичку и добавляем в ответ
+            result += toBinary(num);
+        } else {
+            // Если это не цифра (буква, знак) — просто добавляем символ как есть
+            result += s[i];
+            i++;
+        }
+    }
+
+    // Записываем итог в файл
+    fout << result;
+
+    fin.close();
+    fout.close();
+
+    return 0;
+}
