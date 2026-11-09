@@ -1,0 +1,222 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    // 1. Ввод размеров матрицы N строк и M столбцов
+    int N, M;
+    cout << "Введите количество строк (N) и столбцов (M): ";
+    cin >> N >> M;
+
+    // 2. Ввод самой матрицы
+    vector<vector<int>> grid(N, vector<int>(M));
+    cout << "Введите элементы матрицы (построчно):" << endl;
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < M; ++j) {
+            cin >> grid[i][j];
+        }
+    }
+
+    // 3. Массив для хранения максимальных сумм баллов (динамика)
+    vector<vector<int>> dp(N, vector<int>(M, 0));
+    
+    // Инициализируем стартовую точку
+    dp[0][0] = grid[0][0];
+
+    // Заполняем первый столбец (двигаться можно только сверху вниз)
+    for (int i = 1; i < N; ++i) {
+        dp[i][0] = dp[i - 1][0] + grid[i][0];
+    }
+
+    // Заполняем первую строку (двигаться можно только слева направо)
+    for (int j = 1; j < M; ++j) {
+        dp[0][j] = dp[0][j - 1] + grid[0][j];
+    }
+
+    // Заполняем остальную матрицу
+    for (int i = 1; i < N; ++i) {
+        for (int j = 1; j < M; ++j) {
+            // Максимальная сумма приходит либо сверху, либо слева
+            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
+        }
+    }
+
+    // 4. Восстановление пути (идем с конца в начало)
+    vector<pair<int, int>> path;
+    int r = N - 1;
+    int c = M - 1;
+    path.push_back({r, c});
+
+    // Пока не дошли до старта
+    while (r > 0 || c > 0) {
+        // Если мы в первой строке, можем двигаться только влево
+        if (r == 0) {
+            c--;
+        }
+        // Если мы в первом столбце, можем двигаться только вверх
+        else if (c == 0) {
+            r--;
+        }
+        // Иначе выбираем тот шаг (сверху или слева), где сумма была больше
+        else {
+            if (dp[r - 1][c] > dp[r][c - 1]) {
+                r--; // пришли сверху
+            } else {
+                c--; // пришли слева
+            }
+        }
+        path.push_back({r, c});
+    }
+
+    // 5. Вывод результата
+    cout << "\nМаксимальная сумма баллов: " << dp[N - 1][M - 1] << endl;
+    cout << "Маршрут (координаты ячеек):" << endl;
+    
+    // Выводим путь в обратном порядке (от старта к финишу)
+    for (int i = path.size() - 1; i >= 0; --i) {
+        cout << path[i].first << path[i].second << endl;
+    }
+
+    return 0;
+}
+
+#Задача № 2
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+// Функция проверки: можно ли разбить пирожки на D дней с разницей не более mid
+bool check(int mid, const vector<int>& calories, int N, int D) {
+    int days_needed = 1; // Нам точно нужен минимум 1 день
+    int current_min = calories[0]; // Самый низкокалорийный пирожок текущего дня
+
+    for (int i = 1; i < N; ++i) {
+        // Если разница между текущим пирожком и минимумом дня превышает mid
+        if (calories[i] - current_min > mid) {
+            days_needed++;       // Начинаем новый день
+            current_min = calories[i]; // Текущий пирожок становится минимумом нового дня
+            
+            // Если дней стало больше, чем у нас есть, значит разница mid слишком мала
+            if (days_needed > D) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+задаача № 3
+
+int main() {
+    int N, D;
+    // Считываем N и D
+    if (!(cin >> N >> D)) return 0;
+
+    vector<int> calories(N);
+    for (int i = 0; i < N; ++i) {
+        cin >> calories[i];
+    }
+
+    // Сортируем калорийности для удобства группировки
+    sort(calories.begin(), calories.end());
+
+    // Бинарный поиск по ответу
+    int left = 0;
+    int right = calories[N - 1] - calories[0]; // Максимально возможная разница
+    int ans = right;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (check(mid, calories, N, D)) {
+            ans = mid;       // Запоминаем возможный ответ
+            right = mid - 1; // Пытаемся найти еще меньшую разницу
+        } else {
+            left = mid + 1;  // Разница слишком мала, нужно увеличить
+        }
+    }
+
+    // Выводим минимально возможную разницу
+    cout << ans << endl;
+
+    return 0;
+}
+
+№4
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+// Направления для движения: вверх, вниз, влево, вправо
+int dx[] = {-1, 1, 0, 0};
+int dy[] = {0, 0, -1, 1};
+
+int max_pdfs = 0;
+int N, M;
+
+// Рекурсивная функция для обхода лабиринта (DFS)
+void dfs(int x, int y, int collected_pdfs, vector<vector<char>>& maze, vector<vector<bool>>& visited) {
+    // Если вышли за границы или наступили на стену, или уже были здесь — стоп
+    if (x < 0 || x >= N || y < 0 || y >= M || maze[x][y] == '1' || visited[x][y]) {
+        return;
+    }
+
+    // Если нашли PDF-файл, увеличиваем счетчик
+    if (maze[x][y] == 'P') {
+        collected_pdfs++;
+    }
+
+    // Если дошли до выхода, обновляем максимальный результат
+    if (maze[x][y] == 'E') {
+        max_pdfs = max(max_pdfs, collected_pdfs);
+        return; // Дальше идти не нужно, мы уже на выходе
+    }
+
+    // Помечаем клетку как посещенную
+    visited[x][y] = true;
+
+    // Идем во все 4 стороны
+    for (int i = 0; i < 4; ++i) {
+        dfs(x + dx[i], y + dy[i], collected_pdfs, maze, visited);
+    }
+
+    // ВАЖНО: при выходе из клетки (возврате) снимаем отметку посещения,
+    // чтобы можно было пройти этот путь при других исследованиях (Backtracking)
+    visited[x][y] = false; 
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    // Считываем размеры лабиринта
+    if (!(cin >> N >> M)) return 0;
+
+    vector<vector<char>> maze(N, vector<char>(M));
+    vector<vector<bool>> visited(N, vector<bool>(M, false));
+    
+    // Считываем сам лабиринт
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < M; ++j) {
+            cin >> maze[i][j];
+        }
+    }
+
+    // Предполагаем, что P.Diddy стартует из левого верхнего угла (0, 0).
+    // Если в условии задачи не сказано, где он стартует, это стандартное допущение.
+    // Если в (0,0) стена, мы просто запустим алгоритм оттуда, и он сразу завершится.
+    dfs(0, 0, 0, maze, visited);
+
+    // Выводим максимальное количество собранных файлов
+    cout << max_pdfs << "\n";
+
+    return 0;
+}
