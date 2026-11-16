@@ -1,0 +1,101 @@
+Задание 3
+
+1. С помощью цикла while
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> v;
+    int i = 0;
+
+    while (i < n) {
+        int x;
+        cin >> x;
+
+        if (v.size() > 0 && v.back() == x) {
+            v.pop_back();
+        } else {
+            v.push_back(x);
+        }
+
+        i++;
+    }
+
+    cout << v.size();
+
+    return 0;
+}
+
+2. С помощью цикла for 
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+    }
+
+    bool changed = true;
+    
+    for (; changed; ) {
+        changed = false;
+        
+        for (int i = 0; i < (int)a.size() - 1; i++) {
+            if (a[i] == a[i+1]) {
+                a.erase(a.begin() + i);
+                a.erase(a.begin() + i);
+                changed = true;
+                break; 
+            }
+        }
+    }
+    cout << a.size() << endl;
+    return 0;
+}
+
+3. С помощью while-do
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+    }
+
+    bool flag;
+    
+    do {
+        flag = false;
+        for (int i = (int)a.size() - 2; i >= 0; i--) {
+            if (a[i] == a[i+1]) {
+                a.erase(a.begin() + i);     
+                a.erase(a.begin() + i);     
+                flag = true; 
+                break; 
+            }
+        }
+    } while (flag);
+
+    cout << a.size() << endl;
+    return 0;
+}
